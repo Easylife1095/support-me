@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useId } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { HugeiconsIcon } from '@hugeicons/react';
@@ -82,8 +82,6 @@ export default function LeaderboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const creatorsTabId = useId();
-  const supportersTabId = useId();
 
   const fetchLeaderboard = async () => {
     setLoading(true);
@@ -171,20 +169,18 @@ export default function LeaderboardPage() {
           </p>
         </header>
 
-        {/* Controls: Type Tabs, Currency & Timeframe Filters */}
+        {/* Controls: View, Currency & Timeframe Filters */}
         <section aria-label="Leaderboard Filters" className="card-brutal bg-card p-4 sm:p-6 space-y-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            {/* Type Switcher Tabs */}
+            {/* View Switcher */}
             <div
-              role="tablist"
+              role="group"
               aria-label="Leaderboard View Type"
               className="inline-flex bg-background border-2 border-ink rounded-xl p-1 gap-1"
             >
               <button
-                id={creatorsTabId}
-                role="tab"
                 type="button"
-                aria-selected={type === 'creators'}
+                aria-pressed={type === 'creators'}
                 onClick={() => setType('creators')}
                 className={`flex items-center gap-2 px-4 py-2 font-bold text-sm rounded-lg transition-all min-h-[44px] ${
                   type === 'creators'
@@ -196,10 +192,8 @@ export default function LeaderboardPage() {
                 Top Creators
               </button>
               <button
-                id={supportersTabId}
-                role="tab"
                 type="button"
-                aria-selected={type === 'supporters'}
+                aria-pressed={type === 'supporters'}
                 onClick={() => setType('supporters')}
                 className={`flex items-center gap-2 px-4 py-2 font-bold text-sm rounded-lg transition-all min-h-[44px] ${
                   type === 'supporters'
