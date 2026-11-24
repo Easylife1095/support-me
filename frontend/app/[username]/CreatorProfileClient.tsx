@@ -718,14 +718,6 @@ function CreatorProfileView({ username, locale, onLocaleChange }: CreatorProfile
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://support-mee.vercel.app';
   const profileUrl = `${SITE_URL}/${creator.username}`;
 
-  const handleShareOnTwitter = () => {
-    const text = encodeURIComponent(
-      tProfile('share.tweetText', { name: displayName, username: creator.username })
-    );
-    const url = encodeURIComponent(profileUrl);
-    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
-  };
-
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(profileUrl);
@@ -733,6 +725,25 @@ function CreatorProfileView({ username, locale, onLocaleChange }: CreatorProfile
     } catch {
       notify.error(tProfile('share.copyFailed'));
     }
+  };
+
+  const handleShareOnX = () => {
+    // A noopener window.open returns null even when it opens successfully.
+    // Open a blank tab first so a null handle reliably triggers the fallback.
+    const shareWindow = window.open('about:blank', '_blank');
+    if (!shareWindow) {
+      void handleCopyLink();
+      return;
+    }
+
+    shareWindow.opener = null;
+    const text = tProfile('share.tweetText', { name: displayName, username: creator.username });
+    const params = new URLSearchParams({ text, url: profileUrl });
+    const link = shareWindow.document.createElement('a');
+    link.href = `https://x.com/intent/post?${params}`;
+    link.rel = 'noopener noreferrer';
+    shareWindow.document.body.append(link);
+    link.click();
   };
 
   const layout = THEME_LAYOUTS[creator.theme?.layout ?? 'default'];
@@ -790,7 +801,7 @@ function CreatorProfileView({ username, locale, onLocaleChange }: CreatorProfile
 
           <div className="flex items-center justify-center gap-2 mt-4">
             <button
-              onClick={handleShareOnTwitter}
+              onClick={handleShareOnX}
               className="btn-brutal btn-brutal-white px-3 py-2 text-sm flex items-center gap-2"
               aria-label={tProfile('share.shareAriaLabel')}
             >
